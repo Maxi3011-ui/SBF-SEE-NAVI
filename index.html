@@ -133,7 +133,7 @@
 </head>
 <body>
 <h1>SBF-See Navi</h1>
-<p class="hint">Nur Lösungen der 15 amtlichen Navigationsaufgaben. Watch-optimiert: Nummer, Kurzlabel und Antwort.</p>
+<p class="hint">Nur Lösungen der 15 amtlichen Navigationsaufgaben. Watch-optimiert: Aufgabennummer, Kurzlabel und Antwort.</p>
 <div class="controls">
   <label for="task">Navigationsaufgabe</label>
   <select id="task"></select>
@@ -164,7 +164,7 @@
     list.innerHTML = entries.map((item) => `
       <article class="card">
         <div class="topline">
-          <span class="num">${item.n}</span>
+          <span class="num">${item.order}</span>
           <span class="label">${escapeHtml(item.label)}</span>
         </div>
         <div class="answer">${escapeHtml(item.answer)}</div>
