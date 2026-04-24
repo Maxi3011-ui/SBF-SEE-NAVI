@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SBF-See Navi — Lösungen 1–15</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0.8rem;
+    line-height: 1.15;
+    background: Canvas;
+    color: CanvasText;
+  }
+  h1 {
+    margin: 0 0 0.2rem;
+    font-size: 1.2rem;
+    line-height: 1.05;
+  }
+  .hint {
+    margin: 0 0 0.6rem;
+    color: #666;
+    font-size: 0.8rem;
+  }
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    background: Canvas;
+    padding: 0.45rem 0 0.55rem;
+    border-bottom: 1px solid #ccc;
+  }
+  .controls label {
+    font-weight: 700;
+    width: 100%;
+  }
+  .controls select {
+    width: 100%;
+    min-height: 3.3rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid #bbb;
+    background: Canvas;
+    color: inherit;
+    font: inherit;
+    font-size: 1.02rem;
+    font-weight: 800;
+  }
+  .meta {
+    margin: 0.45rem 0 0.55rem;
+    color: #666;
+    font-size: 0.76rem;
+  }
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 0.5rem 0.55rem;
+    margin: 0.35rem 0;
+    background: color-mix(in srgb, Canvas 94%, #1f6feb 6%);
+  }
+  .topline {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin-bottom: 0.18rem;
+  }
+  .num {
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+  }
+  .label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .answer {
+    font-size: 0.98rem;
+    font-weight: 850;
+    line-height: 1.16;
+    white-space: pre-line;
+    word-break: break-word;
+  }
+  @media (max-width: 320px) {
+    body { padding: 0.45rem; }
+    h1 { font-size: 0.98rem; }
+    .hint { display: none; }
+    .controls { padding: 0.3rem 0 0.4rem; }
+    .controls label { display: none; }
+    .controls select {
+      min-height: 2.95rem;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.92rem;
+    }
+    .meta { font-size: 0.68rem; margin: 0.28rem 0 0.4rem; }
+    .card { padding: 0.36rem 0.42rem; margin: 0.22rem 0; border-radius: 9px; }
+    .num { font-size: 0.98rem; }
+    .label { font-size: 0.62rem; }
+    .answer { font-size: 0.82rem; }
+  }
+  @media (max-width: 220px) {
+    body { padding: 0.28rem; }
+    h1, .hint, .meta, .controls label { display: none; }
+    .controls { padding: 0.22rem 0 0.3rem; }
+    .controls select {
+      min-height: 2.55rem;
+      padding: 0.42rem 0.5rem;
+      font-size: 0.82rem;
+      border-radius: 9px;
+    }
+    .card { padding: 0.24rem 0.28rem; margin: 0.14rem 0; border-radius: 7px; }
+    .num { font-size: 0.82rem; }
+    .label { font-size: 0.54rem; }
+    .answer { font-size: 0.68rem; line-height: 1.12; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .hint, .meta, .label { color: #aaa; }
+    .controls { border-color: #333; }
+    .controls select { border-color: #444; }
+    .card { border-color: #333; background: color-mix(in srgb, Canvas 90%, #1f6feb 10%); }
+  }
+</style>
+</head>
+<body>
+<h1>SBF-See Navi</h1>
+<p class="hint">Nur Lösungen der 15 amtlichen Navigationsaufgaben. Watch-optimiert: Nummer, Kurzlabel und Antwort.</p>
+<div class="controls">
+  <label for="task">Navigationsaufgabe</label>
+  <select id="task"></select>
+</div>
+<p class="meta" id="meta"></p>
+<main id="list"></main>
+<script src="./sbf_see_navi_data.js"></script>
+<script>
+  const DATA = window.SBF_SEE_NAVI_DATA;
+  const taskSel = document.getElementById('task');
+  const meta = document.getElementById('meta');
+  const list = document.getElementById('list');
+
+  for (let i = 1; i <= 15; i++) {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = 'Navigationsaufgabe ' + String(i).padStart(2, '0');
+    taskSel.appendChild(o);
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function render(task) {
+    const entries = DATA[task];
+    meta.textContent = `Aufgabe ${String(task).padStart(2, '0')} — ${entries.length} Lösungen`;
+    list.innerHTML = entries.map((item) => `
+      <article class="card">
+        <div class="topline">
+          <span class="num">${item.n}</span>
+          <span class="label">${escapeHtml(item.label)}</span>
+        </div>
+        <div class="answer">${escapeHtml(item.answer)}</div>
+      </article>
+    `).join('');
+  }
+
+  taskSel.addEventListener('change', () => {
+    const task = taskSel.value;
+    render(task);
+    localStorage.setItem('sbf-see-navi-task', task);
+  });
+
+  const saved = localStorage.getItem('sbf-see-navi-task') || '1';
+  taskSel.value = saved;
+  render(saved);
+</script>
+</body>
+</html>
