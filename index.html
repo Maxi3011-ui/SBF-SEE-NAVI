@@ -159,12 +159,12 @@
   }
 
   function render(task) {
-    const entries = [...DATA[task]].sort((a, b) => a.n - b.n);
+    const entries = [...DATA[task]].sort((a, b) => a.order - b.order);
     meta.textContent = `Aufgabe ${String(task).padStart(2, '0')} — ${entries.length} Lösungen`;
     list.innerHTML = entries.map((item, index) => `
       <article class="card">
         <div class="topline">
-          <span class="num">${index + 1}</span>
+          <span class="num">${item.order ?? index + 1}</span>
           <span class="label">${escapeHtml(item.label)}</span>
         </div>
         <div class="answer">${escapeHtml(item.answer)}</div>
